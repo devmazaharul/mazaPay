@@ -1,0 +1,1 @@
+## MazaPay is the most simplayest and secure payment gateway
