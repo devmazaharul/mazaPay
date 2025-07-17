@@ -1,21 +1,6 @@
-services:
-  mazapay_api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - '7070:7070'
-    environment:
-      - PORT=7070
-      - MONGO_URL=mongodb://admin:pass@mongo:27017/
-      - DB_NAME=mazapay
-      - SECRET_KEY=nopassword
- 
-    networks:
-      - mazapay_api_network
-    depends_on: 
-      - mongo
+version: '3.8'
 
+services:
   mongo:
     image: mongo:latest
     ports:
@@ -23,9 +8,10 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=pass
+    volumes:
+      - ./mongo_data:/data/db
     networks:
       - mazapay_api_network
-
 
   mongo-express:
     image: mongo-express:latest
@@ -44,3 +30,6 @@ services:
 networks:
   mazapay_api_network:
     driver: bridge
+
+
+  

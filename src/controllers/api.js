@@ -1,17 +1,18 @@
+const { AppError } = require('../../utils/error');
 const { verifyToken } = require('../../utils/token');
 const { payService } = require('../services');
 
 const paymentInit = async (req, res, next) => {
   try {
     const amount = req.body?.amount;
-    if (!amount || amount <= 0) throw new Error('Invalid amount');
+    if (!amount || amount <= 0) throw AppError('Invalid amount');
     const currentApiKey = req.currentApiKey;
-    if (!currentApiKey) throw new Error('API key is required');
+    if (!currentApiKey) throw AppError('API key is required');
     const responce = await payService.paymentInit({ amount, currentApiKey });
     if (responce?.status == 200) {
       res.status(200).json(responce);
     } else {
-      throw new Error('Payment initialization failed');
+      throw AppError('Payment initialization failed');
     }
   } catch (error) {
     next(error);
@@ -26,13 +27,14 @@ const getPayInfowithID = async (req, res, next) => {
     const responce = await payService.getPayInfowithID({ paymentID });
 
     if (responce?.status == 200) {
+      const resData=responce?.item
       res.render('index', {
-        paymentId: responce?.item?.paymentId,
-        amount: responce?.item?.amount,
-        userId: responce?.item?.userId,
-        marchenName: responce?.item?.marchenName,
-        marchenId: responce?.item?.marchenId,
-        apikey: responce?.item?.key
+        paymentId: resData?.paymentId,
+        amount: resData?.amount,
+        userId: resData?.userId,
+        marchenName: resData?.marchenName,
+        marchenId: resData?.marchenId,
+        apikey: resData?.key
       });
 
     } else {
@@ -46,24 +48,25 @@ const getPayInfowithID = async (req, res, next) => {
 
 const confirmPayment=async(req,res,next)=>{
   try {
+
     const paymentId=req.body?.paymentId;
-    const marchentName=req.body?.marchentName;
-    const amount=req.body?.amount;
+    let marchentName=req.body?.marchentName;
+   marchentName= marchentName.split("-").join(" ")
+    let amount=req.body?.amount;
+    amount=Number(amount.split(" ")[0])
     const email=req.body?.email;
     const pin=req.body?.pin;
     if (!paymentId || !marchentName || !amount || !email || !pin) {
       throw new Error('All fields are required');
     }
-    const currentApiKey = req.currentApiKey;
-    if (!currentApiKey) throw new Error('API key is required');
     const response = await payService.confirmPayment({
       paymentId,
       marchentName,
       amount,
       email,
-      pin,
-      currentApiKey
+      pin
     });
+
     if (response?.status == 200) {
       res.status(200).json(response);
     } else {

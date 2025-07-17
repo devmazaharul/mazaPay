@@ -9,6 +9,6 @@ accountRoute.get('/customer/:id',Authentication, accountController.infoUser); //
 accountRoute.patch('/customer/:id', Authentication,accountController.changePin); //change current pin
 accountRoute.put('/customer/:id',Authentication, accountController.updateUser); //change information
 accountRoute.post('/customer/:id', accountController.resetPin); //reset pin
-accountRoute.post("/genarateapikey",Authentication,accountController.getnarateApiKey)
+accountRoute.post("/genarateapikey",Authentication,accountController.getnarateApiKey) //done 
 module.exports = accountRoute
 

@@ -5,7 +5,8 @@ const paymentSchema = new Schema({
   status: { type: String, enum: ['pending', 'completed', 'failed'], default: 'pending' },
   userId: { type: Schema.ObjectId, ref: 'Account', required: true},
   paymentId: { type: String, unique: true,required:true },
-  marchenId: { type:Schema.ObjectId,ref:"ApiKey", required: true }
+  marchenId: { type:Schema.ObjectId,ref:"ApiKey", required: true },
+  isSuccess:{type:Boolean,default:false}
 }, { timestamps: true });
 
 

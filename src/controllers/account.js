@@ -100,11 +100,22 @@ const resetPin=async(req,res,next)=>{
 
 const getnarateApiKey=async(req,res,next)=>{
   try {
-    const currentUser=req.currentUserInfo;
+    const currentUser=req?.currentUserInfo;
     const marcentName=req.body?.marcentname;
-    if(!marcentName) throw AppError("Marcent name is required")
+    const callbackURL=req.body?.callbackurl;
+    const websiteURL=req.body?.websiteurl;
+    if(!currentUser) throw AppError("Invalid user token")
+ 
+    if(!marcentName || !callbackURL || !websiteURL) throw AppError("All fields are required (marcentName, callbackURL, websiteURL)")
 
-    const responce=await accountService.getnarateApiKeyService({currentUser,marcentName})
+    if(!validateUserData({item:marcentName,type:"name"})) throw AppError("Invalid marcent name convention",400)
+    if(!validateUserData({item:callbackURL,type:"url"})) throw AppError("Invalid callback url",400)
+    if(!validateUserData({item:websiteURL,type:"url"})) throw AppError  ("Invalid website url",400)
+    if(marcentName.length<3 || marcentName.length>50) throw AppError("Marcent name should be between 3 to 50 characters")
+    if(callbackURL.length<5 || callbackURL.length>100) throw AppError("Callback url should be between 5 to 100 characters")
+    if(websiteURL.length<5 || websiteURL.length>100) throw AppError("Website url should be between 5 to 100 characters")
+
+    const responce=await accountService.getnarateApiKeyService({currentUser,marcentName,callbackURL,websiteURL})
     if(responce?.status==200){
       res.status(200).json(responce)
     }

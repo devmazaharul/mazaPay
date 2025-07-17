@@ -12,7 +12,7 @@ const sendService = async ({ currentUsr, reciverEmail, reciveAmount }) => {
     const { _id } = currentUsr?.item;
     const verifySender = await AccountModel.findById(_id);
     if (verifySender.balance < 1) throw AppError('Insufficient balance');
-        if (!verifySender.isActive)
+    if (!verifySender.isActive)
       throw AppError('This account is not avabile for transaction');
     if (verifySender.email === reciverEmail)
       throw AppError('You can not send money to yourself');
@@ -31,122 +31,77 @@ const sendService = async ({ currentUsr, reciverEmail, reciveAmount }) => {
 
     //update sender account
     verifySender.balance -= reciveAmount;
-      const updateSenderInfo = await verifySender.save();
+    const updateSenderInfo = await verifySender.save();
     //update reciver account
-    verifyReciverEmail.balance =  Number(verifyReciverEmail.balance) + Number(reciveAmount);
-   
+    verifyReciverEmail.balance += Number(reciveAmount);
 
-  await verifyReciverEmail.save();
-
-
-    //create transaction
-  const gentrxId=`TRX${Date.now()}${Math.floor(Math.random() * 100)}`
-
-    const transaction = await TransactionModel.create(
-      { 
-        trxID:gentrxId,
-        userID:_id, //sender id
-        relatedUserID:verifyReciverEmail._id, //reciver id
-        amount:reciveAmount,
-        type:"debit"
-      },
-      {
-        trxID:gentrxId,
-        userID:verifyReciverEmail._id,  //reciver id
-        relatedUserID:_id,  //sender id
-        amount:reciveAmount,
-        type:"credit"
-      }
+    await verifyReciverEmail.save();
+    return await transactionCreate(
+      verifySender,
+      verifyReciverEmail,
+      reciveAmount,
+      {typeTitle:"send money"}
     );
-    if (!transaction)
-      throw AppError('Transaction failed, please try again later');
-    
-    const datetimeFormat=new Intl.DateTimeFormat("en-US",{
-       dateStyle: "short",
-      timeStyle: "short",
-    
-    })
-    const finalFormat=datetimeFormat.format(transaction.updatedAt)
-
-
-sendTransactionEmail({
-  amount: reciveAmount,
-  to: reciverEmail,
-  senderName: verifySender.name,
-  datetime: finalFormat,
-  recivername: verifyReciverEmail.name,
-  trxId: gentrxId
-}).catch(console.error); 
-
-
-return responceObj({
-  status: 200,
-  message: 'Transaction successful',
-  item: {
-    transactionId: gentrxId,
-    amount: reciveAmount,
-    reciverEmail:reciverEmail,
-    reciverName: verifyReciverEmail.name,
-    currentBalance: updateSenderInfo.balance,
-  },
-});
 
 
   } catch (error) {
     throw error;
   }
-
 };
 
-const getTransactionList = async ({currentUsr}) => {
+const getTransactionList = async ({ currentUsr }) => {
   try {
-    const {_id}=currentUsr?.item;
-    const findTransaction=await TransactionModel.find({userID:_id}).select("-__v").sort({createdAt:-1}).populate('relatedUserID', 'name email')
-    if(!findTransaction) throw AppError("No transaction found")
+    const { _id } = currentUsr?.item;
+    const findTransaction = await TransactionModel.find({ userID: _id })
+      .select('-__v')
+      .sort({ createdAt: -1 })
+      .populate('relatedUserID', 'name email');
+    if (!findTransaction) throw AppError('No transaction found');
     return responceArr({
       status: 200,
       message: 'Transactions retrieved successfully',
-      items:  findTransaction,
+      items: findTransaction,
     });
-
   } catch (error) {
     throw error;
   }
 };
 
-
-const getTransactionDetails=async({currentUsr,trxId})=>{
+const getTransactionDetails = async ({ currentUsr, trxId }) => {
   try {
-    const findTransaction=await TransactionModel.findOne({trxID:trxId,userID:currentUsr.item?._id}).select("-__v").populate('relatedUserID', 'name email')
-    if(!findTransaction) throw AppError("No transaction found")
+    const findTransaction = await TransactionModel.findOne({
+      trxID: trxId,
+      userID: currentUsr.item?._id,
+    })
+      .select('-__v')
+      .populate('relatedUserID', 'name email');
+    if (!findTransaction) throw AppError('No transaction found');
 
-      return responceObj({
-        message: 'Transaction details retrieved successfully',
-        status: 200,
-        item: {
-         ...findTransaction._doc
-        },
-      })
-
+    return responceObj({
+      message: 'Transaction details retrieved successfully',
+      status: 200,
+      item: {
+        ...findTransaction._doc,
+      },
+    });
   } catch (error) {
     throw error;
   }
-}
+};
 
-
-const paymentInit=async({amount,currentApiKey})=>{
+const paymentInit = async ({ amount, currentApiKey }) => {
   try {
     const paymentID = `PAY${Date.now()}${Math.floor(Math.random() * 100)}`;
-    const findApiKey = await ApiKeyModel.findOne({key: currentApiKey});
+    const findApiKey = await ApiKeyModel.findOne({ key: currentApiKey });
 
     const createPayment = await PaymentModel.create({
       paymentId: paymentID,
       amount,
-      userId:findApiKey.marchenId,
+      userId: findApiKey.marchenId,
       marchenId: findApiKey._id,
     });
 
-    const createLinkForPayment=signToken({paymentID})
+    const createLinkForPayment = signToken({ paymentID });
 
     return responceObj({
       status: 200,
@@ -156,22 +111,22 @@ const paymentInit=async({amount,currentApiKey})=>{
         amount: createPayment.amount,
         userId: createPayment.userId,
         url: `http://localhost:7070/api/init/${createLinkForPayment}`,
-  
-      }
+      },
     });
-
-
   } catch (error) {
     throw error;
   }
-}
+};
 
-
-const getPayInfowithID=async({paymentID})=>{
+const getPayInfowithID = async ({ paymentID }) => {
   try {
-    const findPaymentInfo=await PaymentModel.findOne({paymentId:paymentID}).select("-__v").populate('marchenId', 'marcentName key marchenId').populate('userId', 'name email');
-    if(!findPaymentInfo) throw AppError("No payment information found");
-    
+    const findPaymentInfo = await PaymentModel.findOne({ paymentId: paymentID })
+      .select('-__v')
+      .populate('marchenId', 'marcentName key marchenId')
+      .populate('userId', 'name email');
+    if (!findPaymentInfo) throw AppError('No payment information found');
+    if(findPaymentInfo.isSuccess) throw AppError("Payment id is expires")
+
     return responceObj({
       status: 200,
       message: 'Payment information retrieved successfully',
@@ -179,54 +134,163 @@ const getPayInfowithID=async({paymentID})=>{
         paymentId: findPaymentInfo.paymentId,
         amount: findPaymentInfo.amount,
         userId: findPaymentInfo.userId,
-        marchenName: findPaymentInfo.marchenId.marcentName.split(" ").join("-"),
+        marchenName: findPaymentInfo.marchenId.marcentName.split(' ').join('-'),
         marchenId: findPaymentInfo.marchenId._id,
-        key: findPaymentInfo.marchenId.key
-      }
+        key: findPaymentInfo.marchenId.key,
+      },
     });
-
-
-
   } catch (error) {
     throw error;
-    
   }
-}
+};
 
-
-const confirmPayment=async({paymentId, marchentName, amount, email, pin, currentApiKey})=>{
+const confirmPayment = async ({
+  paymentId,
+  marchentName,
+  amount,
+  email,
+  pin,
+}) => {
   try {
     if (!paymentId || !marchentName || !amount || !email || !pin) {
       throw AppError('All fields are required');
     }
 
-    console.log(currentApiKey);
+    const findPayer = await AccountModel.findOne({ email });
+    if (!findPayer) throw AppError('Invalid Account');
 
-    const findApiKey = await ApiKeyModel.findOne({key: currentApiKey});
-    if (!findApiKey) throw AppError('API key is required');
+    if (findPayer.status !== 'VERIFIED') throw AppError('Account not verified');
+    const verifyPaymentID = await PaymentModel.findOne({ paymentId: paymentId })
+      .populate('marchenId')
+      .populate('userId');
+    
+      if (!verifyPaymentID) throw AppError('Invalid payment id');
+      if(verifyPaymentID.marchenId.marcentName!==marchentName) throw AppError("Invalid marchent name");
+      if(findPayer._id.toString()==verifyPaymentID.userId._id.toString()) throw AppError("You can not pay your own payment id")
 
-    const findPayment = await PaymentModel.findOne({paymentId, marchenId: findApiKey._id});
-    if (!findPayment) throw AppError('Invalid payment ID or merchant ID');
+      amount=verifyPaymentID.amount;
+          if (findPayer.balance < amount)
+      throw AppError('Insufficient balance for this transaction');
+      if(verifyPaymentID.isSuccess) throw AppError("Payment id expire")
+    if (verifyPaymentID.marchenId.marcentName !== marchentName)
+      throw AppError('Invalid marcent name');
+    if (
+      verifyPaymentID.marchenId.marchenId.toString() !=
+      verifyPaymentID.userId._id.toString()
+    )
+      throw AppError('Invalid marcent ID');
+    if (findPayer.pin !== pin) throw AppError('Invalid pin');
 
-  //  if (findPayment.amount !== amount) throw AppError('Amount mismatch');
+    //traandaction test
+    const reciver = verifyPaymentID;
+    const payer = findPayer;
+    const transactionReciver = reciver.userId;
+    payer.balance -= amount;
+    reciver.balance +=amount
+    reciver.isSuccess=true
+    await payer.save();
+    await reciver.save();
+    // create transaction
+    const trxRes= await transactionCreate(payer, transactionReciver, amount, {
+      typeTitle: `payment ${marchentName}`,
+    });
+    if(trxRes?.status!==200) throw AppError("Transaction failed, please try again later")
 
-    // Here you can add logic to process the payment, e.g., update the user's balance
+   
+        const websiteURL=verifyPaymentID.marchenId?.websiteURL;
+        const webhookUrl=verifyPaymentID.marchenId?.callbackURL;
+   //webhook call
+    fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          paymentId: verifyPaymentID.paymentId,
+          amount,
+          marchentName,
+          status: 'success',
+          userName:payer.name
+        }),
+      }).catch(err=>{
+        console.log(err);
+      })
+
 
     return responceObj({
       status: 200,
       message: 'Payment confirmed successfully',
       item: {
-        paymentId: findPayment.paymentId,
-        amount: findPayment.amount,
-        userId: findPayment.userId,
-        marchenName: marchentName
-      }
+        transactionId: trxRes?.item?.transactionId,
+        amount: trxRes?.item?.amount,
+        payerName: payer.name,
+        redirectURL:websiteURL
+      },
     });
-
+    
   } catch (error) {
     throw error;
-  }     
-}
+  }
+};
+
+//transaction create
+const transactionCreate = async (
+  payer,
+  reciver,
+  amount,
+  { typeTitle = 'send mooney' }
+) => {
+  //create transaction
+  const gentrxId = `TRX${Date.now()}${Math.floor(Math.random() * 100)}`;
+
+  const transaction = await TransactionModel.create(
+    {
+      trxID: gentrxId,
+      userID: payer._id, //sender id
+      relatedUserID: reciver._id, //reciver id
+      amount: amount,
+      type: 'debit',
+      typeTitle: typeTitle,
+    },
+    {
+      trxID: gentrxId,
+      userID: reciver._id, //reciver id
+      relatedUserID: payer._id, //sender id
+      amount: amount,
+      type: 'credit',
+      typeTitle: typeTitle,
+    }
+  );
+  if (!transaction)
+    throw AppError('Transaction failed, please try again later');
+
+  const datetimeFormat = new Intl.DateTimeFormat('en-US', {
+    dateStyle: 'short',
+    timeStyle: 'short',
+  });
+  const timestamps = transaction.updatedAt;
+  const finalFormat = datetimeFormat.format(timestamps);
+
+  sendTransactionEmail({
+    amount: amount,
+    to: reciver.email,
+    senderName: payer.name,
+    datetime: finalFormat,
+    recivername: reciver.name,
+    trxId: gentrxId,
+    reson: typeTitle
+  }).catch(console.error);
+
+  return responceObj({
+    status: 200,
+    message: 'Transaction successful',
+    item: {
+      transactionId: gentrxId,
+      amount: amount,
+      payerName: payer.name,
+    },
+  });
+};
 
 module.exports = {
   sendService,
@@ -234,5 +298,5 @@ module.exports = {
   getTransactionDetails,
   paymentInit,
   getPayInfowithID,
-  confirmPayment
+  confirmPayment,
 };

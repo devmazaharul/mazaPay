@@ -7,6 +7,5 @@ module.exports = Object.freeze({
   JWT_EXPIRATION: process.env.JWT_EXPIRATION || "1h",
   SALT_ROUNDS: parseInt(process.env.SALT_ROUNDS, 10) || 10,
   API_BASE_URL: process.env.API_BASE_URL || "/api/v1",
-  MINIMUM_TRANSACTION_AMOUNT:10,
-
+  MINIMUM_TRANSACTION_AMOUNT:10
 })

@@ -23,16 +23,14 @@ app.use((err,_req,res,_next)=>{
       hint:err?.hint || "Plese Contact support care"
     })
 })
-// // // Database Connection & Server Start
-// mongoConnection(process.env.MONGO_URL, process.env.DB_NAME)
-//   .then(() => {
-//     console.log("💻 [mongodb] : DB connected");
-
-//     app.listen(PORT, () => {
-//       console.log(`🚀 Server running at http://localhost:${PORT}`);
-//     });
-//   })
-//   .catch((err) => {
-//     console.error("❌ DB connection failed:", err.message);
-//   });
+//  Database Connection & Server Start
+mongoConnection(process.env.MONGO_URL, process.env.DB_NAME)
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running at http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("❌ DB connection failed:", err.message);
+  });
 

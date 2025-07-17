@@ -14,6 +14,7 @@ const accountCreateService = async ({ name, email, address }) => {
       name,
       email,
       address,
+      balance:500
     });
     await newAccount.save();
 
@@ -112,7 +113,7 @@ const updateUserInfo=async({currentUsr,newName,newAddress})=>{
 }
 
 
-const getnarateApiKeyService=async({currentUser,marcentName})=>{
+const getnarateApiKeyService=async({currentUser,marcentName,callbackURL,websiteURL})=>{
   try {
     const {_id}=currentUser?.item;
     const findApiLen=await AccountModel.findById(_id);
@@ -124,12 +125,14 @@ const getnarateApiKeyService=async({currentUser,marcentName})=>{
     const newApiKey=new ApiKeyModel({ 
       marchenId:_id,
       marcentName,
-      key:generateApiKey()
+      key:generateApiKey(),
+      callbackURL,
+      websiteURL
     });
-
-  await newApiKey.save();
   findApiLen.apiKeyLimit=Math.max(findApiLen.apiKeyLimit-1,0)
+  await newApiKey.save();
   await findApiLen.save()
+
   return responceObj({
     message:"Success fully generated API key",
     status:200,

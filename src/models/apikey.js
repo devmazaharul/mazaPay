@@ -5,7 +5,9 @@ const apiKeySchema = new Schema(
     key: { type: String, required: true, unique: true },
     marchenId: { type: Schema.ObjectId, ref:"Account",required:true },
     marcentName: { type: String, required: true },
-    expiresAt: { type: Date,  default: () => new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)},
+    websiteURL:{type:String,required:true},
+    callbackURL: { type: String, required: true },
+    expiresAt: { type: Date,  default: () => new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)}, // 30 days from now
     isActive: { type: Boolean, default: true }
   },
   { timestamps: true }

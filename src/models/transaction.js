@@ -6,6 +6,9 @@ const trxSchema = new Schema(
       type: String,
       required: true,
     },
+    typeTitle:{
+      type:String
+    },
     userID:{
           type:Schema.Types.ObjectId,
         ref:"Account"
