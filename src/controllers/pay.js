@@ -1,6 +1,7 @@
 const AppConfigaration = require('../../constant/AppConfigaration');
 const { AppError } = require('../../utils/error');
 const { payService } = require('../services');
+const { getTransactiosServices } = require('../services/pay');
 
 const senMoney = async (req, res, next) => {
   try {
@@ -82,6 +83,21 @@ const singletransaction = async (req, res, next) => {
   }
 };
 
+
+
+const getTransactions=async(req,res,next)=>{
+  try {
+    
+    const responce=await getTransactiosServices()
+    if(responce.status==200){
+      res.status(200).json(responce)
+    }
+    
+  } catch (error) {
+     next(error);
+  }
+}
+
 module.exports = {
   senMoney,
   cashoutMoney,
@@ -89,4 +105,5 @@ module.exports = {
   detailsTransaction,
   transaction,
   singletransaction,
+  getTransactions
 };

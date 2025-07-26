@@ -2,10 +2,19 @@ require("dotenv").config();
 const { app } = require("./app");
 const { mongoConnection } = require("./config");
 const router = require("./src/routes");
-
+const {rateLimit}=require("express-rate-limit")
 const PORT = process.env.PORT || 3000;
-
-
+const cors = require('cors');
+app.use(cors({
+  origin:"http://localhost:3000",
+  credentials:true
+}));
+// rate limit for the users
+const limit=rateLimit({
+  windowMs: 1 * 60 * 1000, 
+	limit: 100, 
+})
+app.use(limit)
 // Routes
 app.use("/api", router);
 

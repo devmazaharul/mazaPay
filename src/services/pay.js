@@ -1,4 +1,5 @@
 const { sendTransactionEmail } = require('../../lib/mail');
+const { emailQueue } = require('../../queue/queue');
 const { AppError } = require('../../utils/error');
 const { responceObj, responceArr } = require('../../utils/responce');
 const { signToken } = require('../../utils/token');
@@ -271,15 +272,17 @@ const transactionCreate = async (
   const timestamps = transaction.updatedAt;
   const finalFormat = datetimeFormat.format(timestamps);
 
-  sendTransactionEmail({
-    amount: amount,
+
+  const addQueue=await emailQueue.add("send",{
+     amount: amount,
     to: reciver.email,
     senderName: payer.name,
     datetime: finalFormat,
     recivername: reciver.name,
     trxId: gentrxId,
     reson: typeTitle
-  }).catch(console.error);
+  })
+
 
   return responceObj({
     status: 200,
@@ -288,9 +291,31 @@ const transactionCreate = async (
       transactionId: gentrxId,
       amount: amount,
       payerName: payer.name,
+      queueId:addQueue.id
     },
   });
 };
+
+
+const getTransactiosServices=async()=>{
+  try {
+
+    return responceArr({
+      message:"All transactions",
+      status:200,
+      items:[
+        {
+          name:"maza"
+        }
+      ]
+    })
+    
+  } catch (error) {
+       throw error;
+  }
+}
+
+
 
 module.exports = {
   sendService,
@@ -299,4 +324,5 @@ module.exports = {
   paymentInit,
   getPayInfowithID,
   confirmPayment,
+  getTransactiosServices
 };

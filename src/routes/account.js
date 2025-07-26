@@ -5,6 +5,7 @@ const accountRoute = require('express').Router();
 
 accountRoute.post('/new', accountController.createUser); //create new user
 accountRoute.post('/access', accountController.accessUser); //access user
+accountRoute.get("/me",Authentication,accountController.meController)
 accountRoute.get('/customer/:id',Authentication, accountController.infoUser); //user information
 accountRoute.patch('/customer/:id', Authentication,accountController.changePin); //change current pin
 accountRoute.put('/customer/:id',Authentication, accountController.updateUser); //change information

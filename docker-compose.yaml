@@ -20,16 +20,23 @@ services:
     environment:
       - ME_CONFIG_MONGODB_SERVER=mongo
       - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=pass
       - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
       - ME_CONFIG_MONGODB_ADMINPASSWORD=pass
     depends_on:
       - mongo
     networks:
       - mazapay_api_network
+  redis:
+    image: redis:latest
+    ports:
+      - '6379:6379'
+    networks:
+      - mazapay_api_network
+
 
 networks:
   mazapay_api_network:
     driver: bridge
-
-
-  

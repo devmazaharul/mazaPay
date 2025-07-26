@@ -2,15 +2,11 @@ const { accountService } = require('../src/services');
 const { AppError } = require('../utils/error');
 const { verifyToken } = require('../utils/token');
 
-const Authentication =async (req, res, next) => {
+const Authentication =async (req, _res, next) => {
   try {
-    let authHeader = req.headers?.authorization;
+        const authHeader = req.cookies?.token;
     if (!authHeader) throw AppError('Invalid token');
-    if (!authHeader.startsWith('Bearer'))
-      throw AppError('Invalid token convention please provide Bearer token');
-    authHeader=authHeader.split(" ")[1]
     const isValidtoken=verifyToken(authHeader)
-
     if (!isValidtoken)
       throw AppError('Invalid token please provide a valid token');
     if (isValidtoken?.role !== 'USER') throw AppError('Incorrect token');
