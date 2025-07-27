@@ -6,7 +6,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 app.use(express.static('public'));
 app.use(cors({
-  origin:"http://localhost:3000",
+  origin:"*",
   credentials:true
 }));
 app.use([express.json(), express.urlencoded({ extended: true }), helmet()]);
