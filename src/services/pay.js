@@ -1,5 +1,4 @@
-const { sendTransactionEmail } = require('../../lib/mail');
-//const { emailQueue } = require('../../queue/queue');
+const { emailQueue } = require('../../queue/queue');
 const { AppError } = require('../../utils/error');
 const { responceObj, responceArr } = require('../../utils/responce');
 const { signToken } = require('../../utils/token');
@@ -272,27 +271,27 @@ const transactionCreate = async (
   const timestamps = transaction.updatedAt;
   const finalFormat = datetimeFormat.format(timestamps);
 
-  // const addQueue=await emailQueue.add("send",{
-  //    amount: amount,
-  //   to: reciver.email,
-  //   senderName: payer.name,
-  //   datetime: finalFormat,
-  //   recivername: reciver.name,
-  //   trxId: gentrxId,
-  //   reson: typeTitle
-  // })
-
-   sendTransactionEmail({
-       amount: amount,
+  const addQueue=await emailQueue.add("send",{
+     amount: amount,
     to: reciver.email,
     senderName: payer.name,
     datetime: finalFormat,
     recivername: reciver.name,
     trxId: gentrxId,
     reson: typeTitle
-  }).catch((err)=>{
-    console.log("mail send error");
   })
+
+  //  sendTransactionEmail({
+  //      amount: amount,
+  //   to: reciver.email,
+  //   senderName: payer.name,
+  //   datetime: finalFormat,
+  //   recivername: reciver.name,
+  //   trxId: gentrxId,
+  //   reson: typeTitle
+  // }).catch((err)=>{
+  //   console.log("mail send error");
+  // })
 
   return responceObj({
     status: 200,
