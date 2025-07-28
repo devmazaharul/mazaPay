@@ -59,6 +59,21 @@ const accessUser = async (req, res, next) => {
     next(error);
   }
 };
+
+const logout=async(req,res,next)=>{
+  try {
+
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: false,
+    sameSite: 'lax',
+  })
+  res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    next(error)
+  }
+}
+
 const infoUser = async (req, res, next) => {
   try {
     const userID = req.params?.id;
@@ -174,5 +189,6 @@ module.exports = {
   infoUser,
   resetPin,
   getnarateApiKey,
-  meController
+  meController,
+  logout
 };

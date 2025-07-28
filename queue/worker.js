@@ -18,6 +18,10 @@ worker.on("completed",(job)=>{
   console.log(`Job complete job id is ${job.id}`);
 })
 
+worker.on("failed",(err)=>{
+  console.log(err);
+})
+
 worker.on("error",(err)=>{
   console.log("error", err);
 })

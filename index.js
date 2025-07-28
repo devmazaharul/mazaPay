@@ -4,11 +4,7 @@ const { mongoConnection } = require("./config");
 const router = require("./src/routes");
 const {rateLimit}=require("express-rate-limit")
 const PORT = process.env.PORT || 3000;
-const cors = require('cors');
-app.use(cors({
-  origin:"http://localhost:3000",
-  credentials:true
-}));
+
 // rate limit for the users
 const limit=rateLimit({
   windowMs: 1 * 60 * 1000, 
@@ -16,6 +12,7 @@ const limit=rateLimit({
 })
 app.use(limit)
 // Routes
+
 app.use("/api", router);
 
 
@@ -35,7 +32,7 @@ app.use((err,_req,res,_next)=>{
 //  Database Connection & Server Start
 mongoConnection(process.env.MONGO_URL, process.env.DB_NAME)
   .then(() => {
-    app.listen(PORT, () => {
+    app.listen(PORT,'0.0.0.0', () => {
       console.log(`🚀 Server running at http://localhost:${PORT}`);
     });
   })

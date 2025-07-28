@@ -272,7 +272,6 @@ const transactionCreate = async (
   const timestamps = transaction.updatedAt;
   const finalFormat = datetimeFormat.format(timestamps);
 
-
   const addQueue=await emailQueue.add("send",{
      amount: amount,
     to: reciver.email,
@@ -283,7 +282,6 @@ const transactionCreate = async (
     reson: typeTitle
   })
 
-
   return responceObj({
     status: 200,
     message: 'Transaction successful',
@@ -291,7 +289,7 @@ const transactionCreate = async (
       transactionId: gentrxId,
       amount: amount,
       payerName: payer.name,
-      queueId:addQueue.id
+       queueId:addQueue.id
     },
   });
 };
