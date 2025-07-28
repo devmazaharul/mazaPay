@@ -45,12 +45,12 @@ const accessUser = async (req, res, next) => {
     const responce = await accountService.accessAccountService({ email, pin });
     if (responce?.status == 200) {
 
-      res.cookie('token', responce?.item?.token, {
-        maxAge: 24 * 60 * 60 * 1000,
-        httpOnly: true,
-        secure:true,
-        sameSite:"lax"
-      });
+res.cookie("token", responce?.item?.token, {
+  httpOnly: true,
+  secure: true, // HTTPS এর জন্য
+  sameSite: "None", // cross-site এর জন্য
+  maxAge: 1000 * 60 * 60 * 24 * 7, // 7 দিন
+});
 
   
       res.status(200).json(responce);
@@ -66,7 +66,7 @@ const logout=async(req,res,next)=>{
   res.clearCookie('token', {
     httpOnly: true,
     secure: true,
-    sameSite: 'lax',
+    sameSite: 'None',
   })
   res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
