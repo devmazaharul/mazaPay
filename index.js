@@ -4,6 +4,11 @@ const { mongoConnection } = require("./config");
 const router = require("./src/routes");
 const {rateLimit}=require("express-rate-limit")
 const PORT = process.env.PORT || 3000;
+const cors = require('cors');
+app.use((req,res,next)=>{
+  console.log(req.ip);
+  next()
+})
 app.use(
   cors({
     origin: 'https://pay.mazaharul.site',
