@@ -4,7 +4,12 @@ const { mongoConnection } = require("./config");
 const router = require("./src/routes");
 const {rateLimit}=require("express-rate-limit")
 const PORT = process.env.PORT || 3000;
-
+app.use(
+  cors({
+    origin: 'https://pay.mazaharul.site',
+    credentials: true,
+  })
+);
 // rate limit for the users
 const limit=rateLimit({
   windowMs: 1 * 60 * 1000, 
