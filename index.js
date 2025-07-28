@@ -3,31 +3,35 @@ const { app } = require("./app");
 const { mongoConnection } = require("./config");
 const router = require("./src/routes");
 const {rateLimit}=require("express-rate-limit")
-const PORT = process.env.PORT || 3000;
-const cors = require('cors');
-app.use((req,res,next)=>{
-  console.log(req.ip);
-  next()
-})
-app.use(
-  cors({
-    origin: 'https://pay.mazaharul.site',
-    credentials: true,
-  })
-);
+const PORT = process.env.PORT || 7071;
+
 // rate limit for the users
 const limit=rateLimit({
   windowMs: 1 * 60 * 1000, 
 	limit: 100, 
 })
 app.use(limit)
-// Routes
 
+app.use((req,res,next)=>{
+  console.log(req.ip);
+  next()
+})
 app.use("/api", router);
 
 
+
+
+app.get('/', (_req, res) => {
+  res.status(200).json({
+    message: 'Welcome to maza secure pay',
+  });
+});
+
+// Routes
+
+
+
 app.use((_req,res,_next)=>{
- 
     res.status(400).json({
       message:"page not found",
       status:400
@@ -40,6 +44,10 @@ app.use((err,_req,res,_next)=>{
       hint:err?.hint || "Plese Contact support care"
     })
 })
+
+
+
+
 //  Database Connection & Server Start
 mongoConnection(process.env.MONGO_URL, process.env.DB_NAME)
   .then(() => {

@@ -44,16 +44,13 @@ const accessUser = async (req, res, next) => {
 
     const responce = await accountService.accessAccountService({ email, pin });
     if (responce?.status == 200) {
+      res.cookie('token', responce?.item?.token, {
+        httpOnly: true,
+        secure: false, 
+        sameSite: 'lax', 
+        maxAge: 1000 * 60 * 60 * 24 * 7 //7days
+      });
 
-res.cookie("token", responce?.item?.token, {
-  httpOnly: true,
-  secure: true, // HTTPS এর জন্য
-  sameSite: "None", // cross-site এর জন্য
-  maxAge: 1000 * 60 * 60 * 24 * 7, // 7 দিন
-  domain: 'pay.mazaharul.site'
-});
-
-  
       res.status(200).json(responce);
     }
   } catch (error) {
@@ -61,19 +58,18 @@ res.cookie("token", responce?.item?.token, {
   }
 };
 
-const logout=async(req,res,next)=>{
+const logout = async (req, res, next) => {
   try {
-
-  res.clearCookie('token', {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'None',
-  })
-  res.status(200).json({ message: "Logged out successfully" });
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+    });
+    res.status(200).json({ message: 'Logged out successfully' });
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 const infoUser = async (req, res, next) => {
   try {
@@ -173,14 +169,14 @@ const getnarateApiKey = async (req, res, next) => {
   }
 };
 
-const meController=async(req,res,next)=>{
+const meController = async (req, res, next) => {
   try {
-    const currentUser=req.currentUserInfo;
-      res.status(200).json(currentUser)
+    const currentUser = req.currentUserInfo;
+    res.status(200).json(currentUser);
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 module.exports = {
   createUser,
@@ -191,5 +187,5 @@ module.exports = {
   resetPin,
   getnarateApiKey,
   meController,
-  logout
+  logout,
 };
