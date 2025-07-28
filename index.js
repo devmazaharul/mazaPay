@@ -27,6 +27,7 @@ app.use("/api", router);
 
 
 app.use((_req,res,_next)=>{
+ 
     res.status(400).json({
       message:"page not found",
       status:400

@@ -50,6 +50,7 @@ res.cookie("token", responce?.item?.token, {
   secure: true, // HTTPS এর জন্য
   sameSite: "None", // cross-site এর জন্য
   maxAge: 1000 * 60 * 60 * 24 * 7, // 7 দিন
+  domain: 'pay.mazaharul.site'
 });
 
   
