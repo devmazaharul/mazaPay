@@ -12,10 +12,6 @@ const limit=rateLimit({
 })
 app.use(limit)
 
-app.use((req,res,next)=>{
-  console.log(req.ip);
-  next()
-})
 app.use("/api", router);
 
 
