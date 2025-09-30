@@ -125,7 +125,21 @@ const getPayInfowithID = async ({ paymentID }) => {
       .populate('marchenId', 'marcentName key marchenId')
       .populate('userId', 'name email');
     if (!findPaymentInfo) throw AppError('No payment information found');
-    if(findPaymentInfo.isSuccess) throw AppError("Payment id is expires")
+
+    if(findPaymentInfo.isSuccess) {
+       return responceObj({
+      status: 301,
+      message: 'Your payment id is expire',
+      item: {
+        paymentId: findPaymentInfo.paymentId,
+        amount: findPaymentInfo.amount,
+        userId: findPaymentInfo.userId,
+        marchenName: findPaymentInfo.marchenId.marcentName.split(' ').join('-'),
+        marchenId: findPaymentInfo.marchenId._id,
+        key: findPaymentInfo.marchenId.key,
+      },
+    });
+    }
 
     return responceObj({
       status: 200,
@@ -159,7 +173,7 @@ const confirmPayment = async ({
     const findPayer = await AccountModel.findOne({ email });
     if (!findPayer) throw AppError('Invalid Account');
 
-    if (findPayer.status !== 'VERIFIED') throw AppError('Account not verified');
+    if (!findPayer.status) throw AppError('Account not verified');
     const verifyPaymentID = await PaymentModel.findOne({ paymentId: paymentId })
       .populate('marchenId')
       .populate('userId');
@@ -323,6 +337,16 @@ const getTransactiosServices=async()=>{
        throw error;
   }
 }
+
+
+const collectSystemLog=async()=>{
+  try {
+    const logs=[]
+  } catch (error) {
+    throw error
+  }
+}
+
 
 
 

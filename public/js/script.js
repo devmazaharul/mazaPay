@@ -1,12 +1,17 @@
+
+  const paymentId = document.getElementById('paymentId').value;
 document.getElementById('paymentForm').addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  const paymentId = document.getElementById('paymentId').value;
+
   const marchentName = document.getElementById('marchentName').value;
   const amount = document.getElementById('amount').value;
   const email = document.getElementById('email').value;
   const pin = document.getElementById('pin').value;
+
   const messageBox = document.getElementById('messageBox');
+
+
   if (!/^[0-9]{4,6}$/.test(pin)) {
     showMessage('PIN must be 4 to 6 digits.', 'error');
     return;
@@ -26,6 +31,7 @@ document.getElementById('paymentForm').addEventListener('submit', async (e) => {
         'success '
       )
         window.location.href=result?.item.redirectURL
+        
     } else {
       showMessage(`❌ ${result.message || 'Payment failed.'}`, 'error');
     }
@@ -41,5 +47,5 @@ document.getElementById('paymentForm').addEventListener('submit', async (e) => {
 });
 
 document.getElementById('cancel').addEventListener('click', () => {
-  window.location.href = 'http://localhost:7070';
+  window.location.href = redirectUrl
 });

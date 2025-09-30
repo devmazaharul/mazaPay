@@ -1,16 +1,36 @@
 const { Authentication } = require('../../authentication/authentication');
-const {accountController} = require('../controllers');
+const { accountController } = require('../controllers');
 const accountRoute = require('express').Router();
 
-accountRoute.post('/new', accountController.createUser); //create new user
-accountRoute.post('/access', accountController.accessUser); //access user
-accountRoute.post("/logout",Authentication,accountController.logout)
-accountRoute.get("/me",Authentication,accountController.meController)
-accountRoute.get('/customer/:id',Authentication, accountController.infoUser); //user information
-accountRoute.patch('/customer/:id', Authentication,accountController.changePin); //change current pin
-accountRoute.put('/customer/:id',Authentication, accountController.updateUser); //change information
-accountRoute.post('/customer/:id', accountController.resetPin); //reset pin
-accountRoute.post("/genarateapikey",Authentication,accountController.getnarateApiKey) //done 
+/**
+ * ================================
+ * 🔑 Authentication Routes
+ * ================================
+ */
+accountRoute.post('/new', accountController.createUser);        // Create new user
+accountRoute.post('/access', accountController.accessUser);     // Login / access user
+accountRoute.post('/logout', Authentication, accountController.logout); // Logout
+accountRoute.get('/me', Authentication, accountController.meController); // Current user info
 
-module.exports = accountRoute
+/**
+ * ================================
+ * 👤 Customer Routes
+ * ================================
+ */
+accountRoute
+  .route('/customer/:id')
+  .get(Authentication, accountController.infoUser)        // User info
+  .patch(Authentication, accountController.changePin)     // Change PIN
+  .put(Authentication, accountController.updateUser)      // Update info
+  .post(accountController.resetPin);                      // Reset PIN
 
+/**
+ * ================================
+ * 🔐 API Key Routes
+ * ================================
+ */
+accountRoute.post('/generateapikey', Authentication, accountController.getnarateApiKey); // Generate API key
+accountRoute.get('/apikeys/me', Authentication, accountController.meapikeyinfocontroller);  // Get my API keys info
+accountRoute.delete('/apikeys/:apikeyid', Authentication, accountController.deleteApikey);  // Delete API key
+
+module.exports = accountRoute;

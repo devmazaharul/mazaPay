@@ -1,6 +1,7 @@
+const { apiKeyRegex } = require('../../authentication/apiAuth');
 const { AppError } = require('../../utils/error');
 const { validateUserData, isValidObjectId } = require('../../utils/validation');
-const { accountService } = require('../services');
+const { accountService,apiService } = require('../services');
 
 const createUser = async (req, res, next) => {
   try {
@@ -73,9 +74,7 @@ const logout = async (req, res, next) => {
 
 const infoUser = async (req, res, next) => {
   try {
-    const userID = req.params?.id;
     const currentUsr = req.currentUserInfo;
-
     if (!userID) throw AppError('Invali user id');
     if (!isValidObjectId(userID)) throw AppError('Invalid user id');
     if ((currentUsr?.item?._id).toString() !== userID)
@@ -139,7 +138,7 @@ const getnarateApiKey = async (req, res, next) => {
 
     if (!marcentName || !callbackURL || !websiteURL)
       throw AppError(
-        'All fields are required (marcentName, callbackURL, websiteURL)'
+        'All fields are required (marcentName, callbackurl, websiteurl)'
       );
 
     if (!validateUserData({ item: marcentName, type: 'name' }))
@@ -178,6 +177,34 @@ const meController = async (req, res, next) => {
   }
 };
 
+
+
+const meapikeyinfocontroller=async(req, res, next)=>{
+  try {
+      const userInfo=req.currentUserInfo;
+      const response=await apiService.meapikeyinfoService(userInfo)
+      res.status(200).json(response)
+  } catch (error) {
+    next(error)
+  }
+}
+
+
+const deleteApikey=async(req,res,next)=>{
+  try {
+      const currentUser=req.currentUserInfo;
+      const keyId=req.params.apikeyid;
+      if(!keyId ) throw  AppError("Invalid api key")
+
+          const response=await apiService.deleteApikeyService(currentUser,keyId)
+        res.status(200).json(response)
+
+  } catch (error) {
+    next(error)
+  }
+}
+
+
 module.exports = {
   createUser,
   accessUser,
@@ -188,4 +215,6 @@ module.exports = {
   getnarateApiKey,
   meController,
   logout,
+  meapikeyinfocontroller,
+  deleteApikey
 };

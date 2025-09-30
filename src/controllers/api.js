@@ -26,6 +26,18 @@ const getPayInfowithID = async (req, res, next) => {
     const { paymentID } = verifyToken(paymentToken);
     const responce = await payService.getPayInfowithID({ paymentID });
 
+    if(responce?.status==301){
+      const resData=responce?.item
+     return  res.render('error', {
+        paymentId: resData?.paymentId,
+        amount: resData?.amount,
+
+        marchenName: resData?.marchenName,
+        message:"Your payment is expire brother plese create new payment id"
+
+      });
+    }
+
     if (responce?.status == 200) {
       const resData=responce?.item
       res.render('index', {
@@ -51,7 +63,8 @@ const confirmPayment=async(req,res,next)=>{
 
     const paymentId=req.body?.paymentId;
     let marchentName=req.body?.marchentName;
-   marchentName= marchentName.split("-").join(" ")
+   marchentName= marchentName.split("-").join(" ");
+   
     let amount=req.body?.amount;
     amount=Number(amount.split(" ")[0])
     const email=req.body?.email;
