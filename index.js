@@ -4,6 +4,7 @@ const { mongoConnection } = require("./config");
 const router = require("./src/routes");
 const {rateLimit}=require("express-rate-limit")
 const PORT = process.env.PORT || 7071;
+const serverless = require("serverless-http");
 
 // rate limit for the users
 const limit=rateLimit({
