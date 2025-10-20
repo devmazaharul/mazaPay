@@ -5,7 +5,7 @@ app.use(cookieParser());
 const helmet = require('helmet');
 const cors = require('cors');
 app.use(express.static('public'));
-console.log(process.env.REDIS_HOST)
+
 app.use(
   cors({
     origin: ['http://localhost:3001','http://localhost:3000',process.env.SITE_URL],
