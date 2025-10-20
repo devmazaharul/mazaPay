@@ -13,6 +13,18 @@ const apiKeySchema = new Schema(
   { timestamps: true }
 );
 
+
+
+// apiKeySchema.pre("save",function(next){
+//   console.log("Before save")
+//   console.log(this.marcentName)
+//   next()
+// })
+apiKeySchema.post("save",function(res){
+  console.log(res)
+  console.log("after save")
+})
+
 const ApiKeyModel = models.ApiKey || model('ApiKey', apiKeySchema);
 module.exports = {
   ApiKeyModel,

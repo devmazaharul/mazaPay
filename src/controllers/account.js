@@ -138,7 +138,7 @@ const getnarateApiKey = async (req, res, next) => {
 
     if (!marcentName || !callbackURL || !websiteURL)
       throw AppError(
-        'All fields are required (marcentName, callbackurl, websiteurl)'
+        'All fields are required (marcentname, callbackurl, websiteurl)'
       );
 
     if (!validateUserData({ item: marcentName, type: 'name' }))
