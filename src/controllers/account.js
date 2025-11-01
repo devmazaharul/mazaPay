@@ -47,7 +47,7 @@ const accessUser = async (req, res, next) => {
     if (responce?.status == 200) {
       res.cookie('token', responce?.item?.token, {
         httpOnly: true,
-        secure: false, 
+        secure: true, 
         sameSite: 'none', 
         maxAge: 1000 * 60 * 60 * 24 * 7 //7days
       });
