@@ -4,9 +4,11 @@ const { verifyToken } = require('../utils/token');
 
 const Authentication = async (req, _res, next) => {
     try {
-        let authHeader = req.headers?.token || '';
+     
+
+        let authHeader = req.headers?.authorization;
         if (!authHeader) throw AppError('Invalid token');
-        if (authHeader.includes('Bearer') == false) throw AppError('Invalid token format');
+        if (!authHeader.startsWith('Bearer')) throw AppError('Invalid token format');
         authHeader = authHeader.split(' ')[1];
 
         const isValidtoken = verifyToken(authHeader);

@@ -35,7 +35,6 @@ const createUser = async (req, res, next) => {
 
 const accessUser = async (req, res, next) => {
     try {
-        console.log('coming..');
         const email = req.body?.email;
         const pin = req.body?.pin;
         if (!email || !pin) throw AppError('Invalid email or pin');
