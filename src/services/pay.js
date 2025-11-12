@@ -110,7 +110,7 @@ const paymentInit = async ({ amount, currentApiKey }) => {
         paymentId: createPayment.paymentId,
         amount: createPayment.amount,
         userId: createPayment.userId,
-        url: `http://localhost:7070/api/init/${createLinkForPayment}`,
+        url: `${process.env.SERVER_URL}/api/payment/${createLinkForPayment}`,
       },
     });
   } catch (error) {

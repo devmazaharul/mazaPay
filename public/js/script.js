@@ -18,7 +18,7 @@ document.getElementById('paymentForm').addEventListener('submit', async (e) => {
   }
 
   try {
-    const res = await fetch('/api/confirm-payment', {
+    const res = await fetch('/api/payment/confirm-payment', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ paymentId, marchentName, amount, email, pin }),
