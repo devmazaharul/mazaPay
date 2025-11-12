@@ -1,4 +1,5 @@
 
+const { sendTransactionEmail } = require('../../lib/mail');
 const { AppError } = require('../../utils/error');
 const { responceObj, responceArr } = require('../../utils/responce');
 const { signToken } = require('../../utils/token');
