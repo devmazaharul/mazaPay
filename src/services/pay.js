@@ -188,9 +188,9 @@ const confirmPayment = async ({ paymentId, marchentName, amount, email, pin }) =
         const payer = findPayer;
         const transactionReciver = reciver.userId;
         payer.balance -= amount;
-        reciver.balance += amount;
+        transactionReciver.balance += amount;
         reciver.isSuccess = true;
-        await Promise.all([payer.save(), reciver.save()]);
+        await Promise.all([payer.save(), reciver.save(),transactionReciver.save()]);
 
         // create transaction
         const trxRes = await transactionCreate(payer, transactionReciver, amount, {
