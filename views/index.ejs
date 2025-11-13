@@ -159,24 +159,30 @@
         <p><span>Amount:</span> <%= amount %> BDT</p>
       </div>
 
-      <form id="paymentForm">
-        <input type="hidden" id="paymentId" name="paymentId" value="<%= paymentId %>" />
-        <input type="hidden" id="marchentName" name="marchentName" value="<%= marchenName %>" />
-        <input type="hidden" id="amount" name="amount" value="<%= amount %>" />
+    <form id="paymentForm">
+  <input type="hidden" id="paymentId" name="paymentId" value="<%= paymentId %>" />
+  <input type="hidden" id="marchentName" name="marchentName" value="<%= marchenName %>" />
+  <input type="hidden" id="amount" name="amount" value="<%= amount %>" />
 
-        <label for="email"><b>Your mazaPay Email</b></label>
-        <input type="email" id="email" name="email" required placeholder="example@gmail.com" />
+  <!-- ✅ নতুন ৩টা hidden field -->
+  <input type="hidden" id="webhookURL" name="webhookURL" value="<%= webhookURL %>" />
+  <input type="hidden" id="successURL" name="successURL" value="<%= successURL %>" />
+  <input type="hidden" id="faildURL" name="faildURL" value="<%= faildURL %>" />
 
-        <label for="pin"><b>Your PIN</b></label>
-        <input type="password" id="pin" name="pin" placeholder="Enter PIN" minlength="4" maxlength="6" required />
+  <label for="email"><b>Your mazaPay Email</b></label>
+  <input type="email" id="email" name="email" required placeholder="example@gmail.com" />
 
-    <div id="btnWrapper">
-          <button type="submit" id="confirm">Confirm Payment</button>
-        <button type="button" id="cancel" >Cancel</button>
+  <label for="pin"><b>Your PIN</b></label>
+  <input type="password" id="pin" name="pin" placeholder="Enter PIN" minlength="4" maxlength="6" required />
 
-    </div>
-        <div id="messageBox"></div>
-      </form>
+  <div id="btnWrapper">
+    <button type="submit" id="confirm">Confirm Payment</button>
+    <button type="button" id="cancel">Cancel</button>
+  </div>
+
+  <div id="messageBox"></div>
+</form>
+
     </div>
 
 

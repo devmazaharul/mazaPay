@@ -122,31 +122,37 @@ const getnarateApiKey = async (req, res, next) => {
     try {
         const currentUser = req?.currentUserInfo;
         const marcentName = req.body?.marcentname;
-        const callbackURL = req.body?.callbackurl;
-        const websiteURL = req.body?.websiteurl;
+        const webhookURL = req.body?.webhookurl;
+        const successURL = req.body?.successurl;
+        const faildURL = req.body?.faildurl;
         if (!currentUser) throw AppError('Invalid user token');
 
-        if (!marcentName || !callbackURL || !websiteURL)
-            throw AppError('All fields are required (marcentname, callbackurl, websiteurl)');
+        if (!marcentName || !webhookURL || !successURL || !faildURL)
+            throw AppError('All fields are required (marcentname, webhook, successurl,faildurl)');
 
         if (!validateUserData({ item: marcentName, type: 'name' }))
             throw AppError('Invalid marcent name convention', 400);
-        if (!validateUserData({ item: callbackURL, type: 'url' }))
-            throw AppError('Invalid callback url', 400);
-        if (!validateUserData({ item: websiteURL, type: 'url' }))
-            throw AppError('Invalid website url', 400);
+        if (!validateUserData({ item: webhookURL, type: 'url' }))
+            throw AppError('Invalid webhook url', 400);
+        if (!validateUserData({ item: successURL, type: 'url' }))
+            throw AppError('Invalid success url', 400);
+        if (!validateUserData({ item: faildURL, type: 'url' }))
+            throw AppError('Invalid faild url', 400);
         if (marcentName.length < 3 || marcentName.length > 50)
             throw AppError('Marcent name should be between 3 to 50 characters');
-        if (callbackURL.length < 5 || callbackURL.length > 100)
-            throw AppError('Callback url should be between 5 to 100 characters');
-        if (websiteURL.length < 5 || websiteURL.length > 100)
-            throw AppError('Website url should be between 5 to 100 characters');
+        if (webhookURL.length < 5 || webhookURL.length > 100)
+            throw AppError('webhook url should be between 5 to 100 characters');
+        if (successURL.length < 5 || successURL.length > 100)
+            throw AppError('success url should be between 5 to 100 characters');
+        if (faildURL.length < 5 || faildURL.length > 100)
+            throw AppError('faild url should be between 5 to 100 characters');
 
         const responce = await accountService.getnarateApiKeyService({
             currentUser,
             marcentName,
-            callbackURL,
-            websiteURL,
+            webhookURL,
+            successURL,
+            faildURL
         });
         if (responce?.status == 200) {
             res.status(200).json(responce);

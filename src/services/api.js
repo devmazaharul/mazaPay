@@ -42,8 +42,6 @@ const meapikeyinfoService=async(userinfo)=>{
 const deleteApikeyService=async(userinfo,apikey)=>{
     const findApiwithkey=await ApiKeyModel.findByIdAndDelete(apikey)
     if(!findApiwithkey) throw  AppError("invalid api key")
-
-
     if(findApiwithkey.marchenId.toString()!==userinfo.item._id.toString()) throw  AppError("invalid api key plese provide a valid key")
       return responceObj({
           message:"Successfully deleted",

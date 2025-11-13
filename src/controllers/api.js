@@ -31,7 +31,6 @@ const getPayInfowithID = async (req, res, next) => {
      return  res.render('error', {
         paymentId: resData?.paymentId,
         amount: resData?.amount,
-
         marchenName: resData?.marchenName,
         message:"Your payment is expire brother plese create new payment id"
 
@@ -46,7 +45,10 @@ const getPayInfowithID = async (req, res, next) => {
         userId: resData?.userId,
         marchenName: resData?.marchenName,
         marchenId: resData?.marchenId,
-        apikey: resData?.key
+        apikey: resData?.key,
+        webhookURL: resData?.webhookURL,
+        successURL: resData?.successURL,
+        faildURL: resData?.faildURL
       });
 
     } else {
@@ -114,6 +116,9 @@ const faieldStatus = async (req, res, next) => {
     next(error);
   }
 };
+
+
+
 
 module.exports = {
   paymentAction,
