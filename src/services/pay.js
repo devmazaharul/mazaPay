@@ -190,16 +190,15 @@ const confirmPayment = async ({ paymentId, marchentName, amount, email, pin }) =
         payer.balance -= amount;
         transactionReciver.balance += amount;
         reciver.isSuccess = true;
-        await Promise.all([payer.save(), reciver.save(),transactionReciver.save()]);
-
+   
         // create transaction
         const trxRes = await transactionCreate(payer, transactionReciver, amount, {
             typeTitle: `payment ${marchentName}`,
         });
         if (trxRes?.status !== 200) throw AppError('Transaction failed, please try again later');
+     await Promise.all([payer.save(), reciver.save(),transactionReciver.save()]);
 
         const successurl = verifyPaymentID.marchenId?.successURL;
-        const faildurl = verifyPaymentID.marchenId?.faildURL;
         const webhookUrl = verifyPaymentID.marchenId?.webhookURL;
         //webhook call
         fetch(webhookUrl, {
@@ -217,6 +216,7 @@ const confirmPayment = async ({ paymentId, marchentName, amount, email, pin }) =
         }).catch((err) => {
             console.log(err);
         });
+        
 
         return responceObj({
             status: 200,
@@ -265,6 +265,8 @@ const transactionCreate = async (payer, reciver, amount, { typeTitle = 'send moo
     const timestamps = transaction.updatedAt;
     const finalFormat = datetimeFormat.format(timestamps);
 
+
+    // reciver mail
     sendTransactionEmail({
         amount: amount,
         to: reciver.email,
@@ -274,6 +276,19 @@ const transactionCreate = async (payer, reciver, amount, { typeTitle = 'send moo
         trxId: gentrxId,
         reson: typeTitle,
     }).catch((err) => {
+        console.log('mail send error');
+    });
+
+    // mail to sender 
+    sendTransactionEmail({
+        amount: amount,
+        to: payer.email,
+        senderName: reciver.name,
+        datetime: finalFormat,
+        recivername: payer.name,
+        trxId: gentrxId,
+        reson: typeTitle,
+    }).catch(() => {
         console.log('mail send error');
     });
 
