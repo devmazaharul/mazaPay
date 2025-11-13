@@ -1,4 +1,3 @@
-const { sendTransactionEmail } = require('../../lib/mail');
 const { AppError } = require('../../utils/error');
 const { responceObj, responceArr } = require('../../utils/responce');
 const { signToken } = require('../../utils/token');
@@ -6,7 +5,7 @@ const { AccountModel } = require('../models/account');
 const { ApiKeyModel } = require('../models/apikey');
 const { PaymentModel } = require('../models/payment');
 const { TransactionModel } = require('../models/transaction');
-
+const { sendTransactionEmail } = require("../../lib/mail");
 const sendService = async ({ currentUsr, reciverEmail, reciveAmount }) => {
     try {
         const { _id } = currentUsr?.item;
@@ -233,75 +232,84 @@ const confirmPayment = async ({ paymentId, marchentName, amount, email, pin }) =
     }
 };
 
-//transaction create
-const transactionCreate = async (payer, reciver, amount, { typeTitle = 'send mooney' }) => {
-    //create transaction
-    const gentrxId = `TRX${Date.now()}${Math.floor(Math.random() * 100)}`;
+// Transaction creation utility
+const transactionCreate = async (payer, receiver, amount, { typeTitle = 'send money' } = {}) => {
+  // Generate unique transaction ID
+  const trxId = `TRX${Date.now()}${Math.floor(Math.random() * 100)}`;
 
-    const transaction = await TransactionModel.create(
-        {
-            trxID: gentrxId,
-            userID: payer._id, //sender id
-            relatedUserID: reciver._id, //reciver id
-            amount: amount,
-            type: 'debit',
-            typeTitle: typeTitle,
-        },
-        {
-            trxID: gentrxId,
-            userID: reciver._id, //reciver id
-            relatedUserID: payer._id, //sender id
-            amount: amount,
-            type: 'credit',
-            typeTitle: typeTitle,
-        },
-    );
-    if (!transaction) throw AppError('Transaction failed, please try again later');
+  // Prepare transactions (debit + credit)
+  const transactionsData = [
+    {
+      trxID: trxId,
+      userID: payer._id,        // sender
+      relatedUserID: receiver._id, // receiver
+      amount,
+      type: 'debit',
+      typeTitle,
+    },
+    {
+      trxID: trxId,
+      userID: receiver._id,     // receiver
+      relatedUserID: payer._id, // sender
+      amount,
+      type: 'credit',
+      typeTitle,
+    },
+  ];
 
-    const datetimeFormat = new Intl.DateTimeFormat('en-US', {
-        dateStyle: 'short',
-        timeStyle: 'short',
-    });
-    const timestamps = transaction.updatedAt;
-    const finalFormat = datetimeFormat.format(timestamps);
+  // Create both transactions atomically
+  const transactions = await TransactionModel.create(transactionsData);
 
+  if (!transactions || transactions.length < 2) {
+    throw new AppError('Transaction failed, please try again later');
+  }
 
-    // reciver mail
-    sendTransactionEmail({
-        amount: amount,
-        to: reciver.email,
-        senderName: payer.name,
-        datetime: finalFormat,
-        recivername: reciver.name,
-        trxId: gentrxId,
-        reson: typeTitle,
-    }).catch((err) => {
-        console.log('mail send error');
-    });
+  // Format datetime
+  const formattedDate = new Intl.DateTimeFormat('en-US', {
+    dateStyle: 'short',
+    timeStyle: 'short',
+  }).format(new Date());
+// receiver mail
+ sendTransactionEmail({
+  to: receiver.email,
+  amount,
+  trxId,
+  datetime:formattedDate,
+  senderName: payer.name,
+  receiverName: receiver.name,
+  reason: "Receive Money",
+  isReceiver: true,
+}).catch((err) => {
+  console.error('Receiver email error:', err.message);
+});
 
-    // mail to sender 
-    sendTransactionEmail({
-        amount: amount,
-        to: payer.email,
-        senderName: reciver.name,
-        datetime: finalFormat,
-        recivername: payer.name,
-        trxId: gentrxId,
-        reson: typeTitle,
-    }).catch(() => {
-        console.log('mail send error');
-    });
+// sender mail
+ sendTransactionEmail({
+  to: payer.email,
+  amount,
+  trxId,
+  datetime:formattedDate,
+  senderName: receiver.name,
+  receiverName: payer.name,
+  reason: "Send Money",
+  isReceiver: false,
+}).catch((err) => {
+  console.error('Sender email error:', err.message);
+});
 
-    return responceObj({
-        status: 200,
-        message: 'Transaction successful',
-        item: {
-            transactionId: gentrxId,
-            amount: amount,
-            payerName: payer.name,
-        },
-    });
+  // Final API response
+  return responceObj({
+    status: 200,
+    message: 'Transaction successful',
+    item: {
+      transactionId: trxId,
+      amount,
+      payerName: payer.name,
+      receiverName: receiver.name,
+    },
+  });
 };
+
 
 const getTransactiosServices = async () => {
     try {
