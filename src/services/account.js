@@ -135,7 +135,7 @@ const getnarateApiKeyService = async ({
             faildURL
         });
         findApiLen.apiKeyLimit = Math.max(findApiLen.apiKeyLimit - 1, 0);
-        await Promise.all([newApiKey(),findApiLen()])
+        await Promise.all([newApiKey.save(),findApiLen.save()])
         return responceObj({
             message: 'Success fully generated API key',
             status: 200,

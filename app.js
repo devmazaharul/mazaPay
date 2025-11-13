@@ -8,7 +8,7 @@ app.use(express.static('public'));
 
 app.use(
     cors({
-        origin: ['http://localhost:3000', process.env.SITE_URL]
+        origin: ['http://localhost:3001', process.env.SITE_URL]
     }),
 );
 
