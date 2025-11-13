@@ -6,11 +6,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 app.use(express.static('public'));
 
-app.use(
-    cors({
-        origin: ['http://localhost:3001', process.env.SITE_URL]
-    }),
-);
+app.use(cors());
 
 app.use([express.json(), express.urlencoded({ extended: true }), helmet()]);
 app.set('view engine', 'ejs');
