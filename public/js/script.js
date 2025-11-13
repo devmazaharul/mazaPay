@@ -54,7 +54,7 @@ document.getElementById('paymentForm').addEventListener('submit', async (e) => {
       showMessage(`❌ ${result.message || 'Payment failed.'}`, 'error');
 
       setTimeout(() => {
-        window.location.href = faildURL;
+        window.location.href = `${faildURL}?id=${encodeURIComponent(paymentId)}`;;
       }, 2000);
     }
   } catch (err) {
