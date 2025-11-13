@@ -4,12 +4,12 @@ const cookieParser = require('cookie-parser');
 app.use(cookieParser());
 const helmet = require('helmet');
 const cors = require('cors');
-app.use(express.static('public'));
 
 app.use(cors());
 
 app.use([express.json(), express.urlencoded({ extended: true }), helmet()]);
 app.set('view engine', 'ejs');
+app.use(express.static('public'));
 
 module.exports = {
     app,

@@ -1,3 +1,22 @@
+
+document.addEventListener('DOMContentLoaded', () => {
+  const backButton = document.getElementById('backButton');
+
+  if (backButton) {
+    backButton.addEventListener('click', () => {
+      const url = backButton.getAttribute('data-fail-url');
+      if (url && url.trim() !== '') {
+        window.location.href = url;
+      } else {
+        alert("Invalid or missing return URL");
+      }
+    });
+  } else {
+    console.error("Back button not found in DOM");
+  }
+});
+
+
 document.getElementById('paymentForm').addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -76,3 +95,30 @@ document.getElementById('cancel').addEventListener('click', () => {
   const faildURL = document.getElementById('faildURL').value;
   window.location.href = faildURL;
 });
+
+
+
+
+   
+    
+  //   // নিশ্চিত করুন যে বোতামটি খুঁজে পাওয়া গেছে
+  //   if (backButton) {
+  //     // বোতামে ক্লিক ইভেন্ট লিসেনার যুক্ত করুন
+  //     backButton.addEventListener('click', function() {
+  //     alert("dldldldl")
+  //       // ডেটা অ্যাট্রিবিউট থেকে URL টি নিন
+  //       const url = backButton.getAttribute('data-fail-url');
+
+  //       if (url && typeof url === 'string' && url.trim() !== '') {
+  //         console.log("Navigating via Event Listener to URL:", url);
+  //         window.location.href = url; // নেভিগেশন
+  //       } else {
+  //         console.error("The return URL is invalid or missing.");
+  //         alert("Return URL is invalid. Going back to previous page.");
+  //         window.history.back();
+  //       }
+  //     });
+  //   } else {
+  //     console.error("Back button element not found in the DOM.");
+  //   }
+  // });

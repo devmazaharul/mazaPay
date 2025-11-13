@@ -130,6 +130,7 @@ const getPayInfowithID = async ({ paymentID }) => {
                     marchenName: findPaymentInfo.marchenId.marcentName.split(' ').join('-'),
                     marchenId: findPaymentInfo.marchenId._id,
                     key: findPaymentInfo.marchenId.key,
+                    faildURL:findPaymentInfo.marchenId.faildURL
                 },
             });
         }
@@ -191,7 +192,7 @@ const confirmPayment = async ({ paymentId, marchentName, amount, email, pin }) =
         reciver.isSuccess = true;
    
         // create transaction
-        const trxRes = await transactionCreate(payer, transactionReciver, amount, {
+        const trxRes = await transactionCreate(payer, transactionReciver, amount,marchentName, {
             typeTitle: `payment ${marchentName}`,
         });
         if (trxRes?.status !== 200) throw AppError('Transaction failed, please try again later');
@@ -233,10 +234,9 @@ const confirmPayment = async ({ paymentId, marchentName, amount, email, pin }) =
 };
 
 // Transaction creation utility
-const transactionCreate = async (payer, receiver, amount, { typeTitle = 'send money' } = {}) => {
+const transactionCreate = async (payer, receiver, amount, marchentName,{ typeTitle = 'send money' } = {}) => {
   // Generate unique transaction ID
   const trxId = `TRX${Date.now()}${Math.floor(Math.random() * 100)}`;
-
   // Prepare transactions (debit + credit)
   const transactionsData = [
     {
@@ -277,7 +277,7 @@ const transactionCreate = async (payer, receiver, amount, { typeTitle = 'send mo
   datetime:formattedDate,
   senderName: payer.name,
   receiverName: receiver.name,
-  reason: "Receive Money",
+  reason: `Receive Money from ${marchentName} `,
   isReceiver: true,
 }).catch((err) => {
   console.error('Receiver email error:', err.message);
@@ -291,7 +291,7 @@ const transactionCreate = async (payer, receiver, amount, { typeTitle = 'send mo
   datetime:formattedDate,
   senderName: receiver.name,
   receiverName: payer.name,
-  reason: "Send Money",
+  reason: typeTitle,
   isReceiver: false,
 }).catch((err) => {
   console.error('Sender email error:', err.message);

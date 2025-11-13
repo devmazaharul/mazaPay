@@ -32,6 +32,7 @@ const getPayInfowithID = async (req, res, next) => {
         paymentId: resData?.paymentId,
         amount: resData?.amount,
         marchenName: resData?.marchenName,
+        faildURL:resData.faildURL,
         message:"Your payment is expire brother plese create new payment id"
 
       });
