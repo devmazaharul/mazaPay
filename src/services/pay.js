@@ -275,8 +275,8 @@ const transactionCreate = async (payer, receiver, amount, marchentName, { typeTi
   // ===============================
   // 📩 EMAIL #1 - Receiver
   // ===============================
-
-     sendTransactionEmail({
+  try {
+      await sendTransactionEmail({
       to: receiver.email,
       amount,
       trxId,
@@ -285,8 +285,15 @@ const transactionCreate = async (payer, receiver, amount, marchentName, { typeTi
       receiverName: receiver.name,
       reason: `Receive Money from ${marchentName}`,
       isReceiver: true,
-    }).then(()=>{
-  sendTransactionEmail({
+    })
+  } catch (error) {
+   console.log("Mail send error reciver") 
+  }
+
+  //sebder confirmation emrail
+
+  try {
+   await sendTransactionEmail({
       to: payer.email,
       amount,
       trxId,
@@ -295,15 +302,11 @@ const transactionCreate = async (payer, receiver, amount, marchentName, { typeTi
       receiverName: payer.name,
       reason: typeTitle,
       isReceiver: false,
-    }).catch((err)=>{
-        console.log("sender mail not send")
     })
-    
-    console.log("Sender email sent");
-    }).catch((err)=>{
-        console.log("Mail send error")
-    })
-
+  } catch (error) {
+    console.log("Mail send error sender")
+  }
+  
 
 
 
