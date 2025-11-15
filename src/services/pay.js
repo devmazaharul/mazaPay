@@ -275,27 +275,35 @@ const transactionCreate = async (payer, receiver, amount, marchentName, { typeTi
   // ===============================
   // 📩 EMAIL #1 - Receiver
   // ===============================
-  try {
-    await sendTransactionEmail({
-      to: receiver.email,
-      amount,
-      trxId,
-      datetime: formattedDate,
-      senderName: payer.name,
-      receiverName: receiver.name,
-      reason: `Receive Money from ${marchentName}`,
-      isReceiver: true,
-    });
-    console.log("Receiver email sent");
-  } catch (err) {
-    console.error("Receiver email error:", err);
-  }
 
-  // ===============================
-  // 📩 EMAIL #2 - Sender
-  // ===============================
-  try {
-    await sendTransactionEmail({
+//      sendTransactionEmail({
+//       to: receiver.email,
+//       amount,
+//       trxId,
+//       datetime: formattedDate,
+//       senderName: payer.name,
+//       receiverName: receiver.name,
+//       reason: `Receive Money from ${marchentName}`,
+//       isReceiver: true,
+//     }).then(()=>{
+//   sendTransactionEmail({
+//       to: payer.email,
+//       amount,
+//       trxId,
+//       datetime: formattedDate,
+//       senderName: receiver.name,
+//       receiverName: payer.name,
+//       reason: typeTitle,
+//       isReceiver: false,
+//     }).catch((err)=>{
+//         console.log("sender mail not send")
+//     })
+    
+//     console.log("Sender email sent");
+//     }).catch((err)=>{
+//         console.log("Mail send error")
+//     })
+sendTransactionEmail({
       to: payer.email,
       amount,
       trxId,
@@ -304,11 +312,13 @@ const transactionCreate = async (payer, receiver, amount, marchentName, { typeTi
       receiverName: payer.name,
       reason: typeTitle,
       isReceiver: false,
-    });
-    console.log("Sender email sent");
-  } catch (err) {
-    console.error("Sender email error:", err);
-  }
+    }).catch((err)=>{
+        console.log("sender mail not send")
+    })
+
+
+
+
 
   // Success Response
   return responceObj({
