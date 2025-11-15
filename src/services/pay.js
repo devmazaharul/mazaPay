@@ -234,73 +234,86 @@ const confirmPayment = async ({ paymentId, marchentName, amount, email, pin }) =
 };
 
 // Transaction creation utility
-const transactionCreate = async (payer, receiver, amount, marchentName,{ typeTitle = 'send money' } = {}) => {
-  // Generate unique transaction ID
+const transactionCreate = async (payer, receiver, amount, marchentName, { typeTitle = 'send money' } = {}) => {
+
+  // Unique TRX ID
   const trxId = `TRX${Date.now()}${Math.floor(Math.random() * 100)}`;
-  // Prepare transactions (debit + credit)
+
+  // DB transaction data
   const transactionsData = [
     {
       trxID: trxId,
-      userID: payer._id,        // sender
-      relatedUserID: receiver._id, // receiver
+      userID: payer._id,
+      relatedUserID: receiver._id,
       amount,
-      type: 'debit',
+      type: "debit",
       typeTitle,
     },
     {
       trxID: trxId,
-      userID: receiver._id,     // receiver
-      relatedUserID: payer._id, // sender
+      userID: receiver._id,
+      relatedUserID: payer._id,
       amount,
-      type: 'credit',
+      type: "credit",
       typeTitle,
     },
   ];
 
-  // Create both transactions atomically
+  // Save Both Transactions
   const transactions = await TransactionModel.create(transactionsData);
 
   if (!transactions || transactions.length < 2) {
-    throw new AppError('Transaction failed, please try again later');
+    throw new AppError("Transaction failed.");
   }
 
-  // Format datetime
-  const formattedDate = new Intl.DateTimeFormat('en-US', {
-    dateStyle: 'short',
-    timeStyle: 'short',
+  // formatted datetime
+  const formattedDate = new Intl.DateTimeFormat("en-US", {
+    dateStyle: "short",
+    timeStyle: "short",
   }).format(new Date());
-// receiver mail
- sendTransactionEmail({
-  to: receiver.email,
-  amount,
-  trxId,
-  datetime:formattedDate,
-  senderName: payer.name,
-  receiverName: receiver.name,
-  reason: `Receive Money from ${marchentName} `,
-  isReceiver: true,
-}).catch((err) => {
-  console.error('Receiver email error:', err.message);
-});
 
-// sender mail
- sendTransactionEmail({
-  to: payer.email,
-  amount,
-  trxId,
-  datetime:formattedDate,
-  senderName: receiver.name,
-  receiverName: payer.name,
-  reason: typeTitle,
-  isReceiver: false,
-}).catch((err) => {
-  console.error('Sender email error:', err.message);
-});
+  // ===============================
+  // 📩 EMAIL #1 - Receiver
+  // ===============================
+  try {
+    await sendTransactionEmail({
+      to: receiver.email,
+      amount,
+      trxId,
+      datetime: formattedDate,
+      senderName: payer.name,
+      receiverName: receiver.name,
+      reason: `Receive Money from ${marchentName}`,
+      isReceiver: true,
+    });
+    console.log("Receiver email sent");
+  } catch (err) {
+    console.error("Receiver email error:", err);
+  }
 
-  // Final API response
+  // ===============================
+  // 📩 EMAIL #2 - Sender
+  // ===============================
+  try {
+    await sendTransactionEmail({
+      to: payer.email,
+      amount,
+      trxId,
+      datetime: formattedDate,
+      senderName: receiver.name,
+      receiverName: payer.name,
+      reason: typeTitle,
+      isReceiver: false,
+    });
+    console.log("Sender email sent");
+  } catch (err) {
+    console.error("Sender email error:", err);
+  }
+
+  // Success Response
   return responceObj({
     status: 200,
-    message: 'Transaction successful',
+    message: "Transaction successful",
     item: {
       transactionId: trxId,
       amount,
@@ -309,6 +322,8 @@ const transactionCreate = async (payer, receiver, amount, marchentName,{ typeTit
     },
   });
 };
+
+
 
 
 const getTransactiosServices = async () => {
