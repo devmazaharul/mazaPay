@@ -275,37 +275,51 @@ const transactionCreate = async (payer, receiver, amount, marchentName, { typeTi
   // ===============================
   // 📩 EMAIL #1 - Receiver
   // ===============================
+
+
+
+
   try {
-      await sendTransactionEmail({
-      to: receiver.email,
-      amount,
-      trxId,
-      datetime: formattedDate,
-      senderName: payer.name,
-      receiverName: receiver.name,
-      reason: `Receive Money from ${marchentName}`,
-      isReceiver: true,
-    })
+const senderMail = sendTransactionEmail({
+  to: payer.email,
+  amount,
+  trxId,
+  datetime: formattedDate,
+  senderName: receiver.name,
+  receiverName: payer.name,
+  reason: typeTitle,
+  isReceiver: false,
+});
+
+const reciverMail = sendTransactionEmail({
+  to: receiver.email,
+  amount,
+  trxId,
+  datetime: formattedDate,
+  senderName: payer.name,
+  receiverName: receiver.name,
+  reason: `Receive Money from ${marchentName}`,
+  isReceiver: true,
+});
+
+const results = await Promise.allSettled([senderMail, reciverMail]);
+
+results.forEach((res, i) => {
+  if (res.status === "fulfilled") {
+    console.log(`Email ${i + 1} sent ✔️`);
+  } else {
+    console.log(`Email ${i + 1} failed ❌`, res.reason);
+  }
+});
+
+    
   } catch (error) {
    console.log("Mail send error reciver") 
   }
 
   //sebder confirmation emrail
 
-  try {
-   await sendTransactionEmail({
-      to: payer.email,
-      amount,
-      trxId,
-      datetime: formattedDate,
-      senderName: receiver.name,
-      receiverName: payer.name,
-      reason: typeTitle,
-      isReceiver: false,
-    })
-  } catch (error) {
-    console.log("Mail send error sender")
-  }
+ 
   
 
 
