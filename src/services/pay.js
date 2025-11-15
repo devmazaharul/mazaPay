@@ -276,34 +276,17 @@ const transactionCreate = async (payer, receiver, amount, marchentName, { typeTi
   // 📩 EMAIL #1 - Receiver
   // ===============================
 
-//      sendTransactionEmail({
-//       to: receiver.email,
-//       amount,
-//       trxId,
-//       datetime: formattedDate,
-//       senderName: payer.name,
-//       receiverName: receiver.name,
-//       reason: `Receive Money from ${marchentName}`,
-//       isReceiver: true,
-//     }).then(()=>{
-//   sendTransactionEmail({
-//       to: payer.email,
-//       amount,
-//       trxId,
-//       datetime: formattedDate,
-//       senderName: receiver.name,
-//       receiverName: payer.name,
-//       reason: typeTitle,
-//       isReceiver: false,
-//     }).catch((err)=>{
-//         console.log("sender mail not send")
-//     })
-    
-//     console.log("Sender email sent");
-//     }).catch((err)=>{
-//         console.log("Mail send error")
-//     })
-sendTransactionEmail({
+     sendTransactionEmail({
+      to: receiver.email,
+      amount,
+      trxId,
+      datetime: formattedDate,
+      senderName: payer.name,
+      receiverName: receiver.name,
+      reason: `Receive Money from ${marchentName}`,
+      isReceiver: true,
+    }).then(()=>{
+  sendTransactionEmail({
       to: payer.email,
       amount,
       trxId,
@@ -315,6 +298,12 @@ sendTransactionEmail({
     }).catch((err)=>{
         console.log("sender mail not send")
     })
+    
+    console.log("Sender email sent");
+    }).catch((err)=>{
+        console.log("Mail send error")
+    })
+
 
 
 
