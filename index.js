@@ -1,6 +1,7 @@
 require("dotenv").config();
 const { app } = require("./app");
 const { mongoConnection } = require("./config");
+const { sendTransactionEmail } = require("./lib/mail");
 const router = require("./src/routes");
 const {rateLimit}=require("express-rate-limit")
 const PORT = process.env.PORT || 7071;
@@ -41,8 +42,6 @@ app.use((err,_req,res,_next)=>{
       hint:err?.hint || "Plese Contact support care"
     })
 })
-
-
 
 
 //  Database Connection & Server Start
