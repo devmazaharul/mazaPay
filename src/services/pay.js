@@ -267,11 +267,11 @@ const transactionCreate = async (paymentId,payer, receiver, amount, marchentName
   }
 
   // formatted datetime
-  const formattedDate = new Intl.DateTimeFormat("en-US", {
-    dateStyle: "short",
-    timeStyle: "short",
-  }).format(new Date());
-
+const formattedDate = new Intl.DateTimeFormat("en-US", {
+  dateStyle: "short",
+  timeStyle: "short",
+  timeZone: "Asia/Dhaka",
+}).format(new Date());
   // ===============================
   // 📩 EMAIL #1 - Receiver
   // ===============================
