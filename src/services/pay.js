@@ -192,7 +192,7 @@ const confirmPayment = async ({ paymentId, marchentName, amount, email, pin }) =
         reciver.isSuccess = true;
    
         // create transaction
-        const trxRes = await transactionCreate(payer, transactionReciver, amount,marchentName, {
+        const trxRes = await transactionCreate(paymentId,payer, transactionReciver, amount,marchentName, {
             typeTitle: `payment ${marchentName}`,
         });
         if (trxRes?.status !== 200) throw AppError('Transaction failed, please try again later');
@@ -234,10 +234,10 @@ const confirmPayment = async ({ paymentId, marchentName, amount, email, pin }) =
 };
 
 // Transaction creation utility
-const transactionCreate = async (payer, receiver, amount, marchentName, { typeTitle = 'send money' } = {}) => {
+const transactionCreate = async (paymentId,payer, receiver, amount, marchentName, { typeTitle = 'send money' } = {}) => {
 
   // Unique TRX ID
-  const trxId = `TRX${Date.now()}${Math.floor(Math.random() * 100)}`;
+  const trxId = paymentId
 
   // DB transaction data
   const transactionsData = [
@@ -316,15 +316,6 @@ results.forEach((res, i) => {
   } catch (error) {
    console.log("Mail send error reciver") 
   }
-
-  //sebder confirmation emrail
-
- 
-  
-
-
-
-
 
   // Success Response
   return responceObj({
